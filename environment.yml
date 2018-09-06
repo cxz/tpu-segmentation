@@ -1,0 +1,5 @@
+name: tgs
+dependencies:
+  - pandas
+  - tensorflow-gpu=1.10
+  - albumentations=0.0.4

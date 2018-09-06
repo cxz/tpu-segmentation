@@ -1,0 +1,37 @@
+FROM nvidia/cuda:9.1-cudnn7-runtime-ubuntu16.04
+MAINTAINER Alexandre Maia <alexandre.maia@gmail.com>
+
+RUN apt-get update -qq && \
+        apt-get install -qq -y -o quiet=1 \
+        build-essential \
+        git \
+        curl \
+        ca-certificates \
+        libjpeg-dev \
+        libpng-dev && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN curl -o ~/miniconda.sh -O  https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh  && \
+     chmod +x ~/miniconda.sh && \
+     ~/miniconda.sh -b -p /opt/conda && \
+     rm ~/miniconda.sh 
+
+ENV PATH /opt/conda/bin:$PATH
+
+COPY environment.yml /app/environment.yml
+
+WORKDIR /app
+RUN conda env create -f /app/environment.yml
+
+COPY . /app
+
+
+ENV LANG C.UTF-8
+ENV LC_ALL C.UTF-8
+
+RUN echo "source activate $(head -1 /app/environment.yml | cut -d' ' -f2)" > ~/.bashrc
+ENV PATH /opt/conda/envs/$(head -1 /app/environment.yml | cut -d' ' -f2)/bin:$PATH
+
+
+
+
